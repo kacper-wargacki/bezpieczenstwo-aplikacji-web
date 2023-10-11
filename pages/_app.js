@@ -4,10 +4,10 @@ export default function App({ Component, pageProps }) {
   return (
     <>
       <Head>
-        <title>Owasp TOP 10 demo</title>
+        <title>Bezpieczne aplikacje Web</title>
         <meta
           name="description"
-          content="Weakly secured website to showcase few vurnabilities written in the OWASP top 10"
+          content="Very secure site :)"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/logo.svg" />

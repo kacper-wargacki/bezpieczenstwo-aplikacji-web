@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useState } from "react";
 import { useCookies } from "react-cookie";
-import { findUserQuery, loginQuery } from "../helpers";
+import { loginQuery } from "../helpers";
 
 export default function Login() {
   const router = useRouter();
@@ -21,19 +21,16 @@ export default function Login() {
 
     // Find user login info
     const response = await loginQuery({ username, password });
-    console.log(response, "is user in database");
-    if (response) {
-      console.log(username);
-      setCookie("username", username, { path: "/" });
-      const users = await findUserQuery({ username });
-      console.log(users);
-      setCookie("userId", users[0].id, { path: "/" });
-      setCookie("userType", users[0].userType, { path: "/" });
-      router.push(`/home?userId=${users[0].id}`);
+    const user = response.data.user
+    console.log(user.username, "is user in database");
+    if (user.id) {
+      setCookie("token", response.data.token, { path: "/" });
+      router.push(`/home`);
     } else {
       alert("Login failed");
     }
   };
+
 
   //handle username and password input to state
   const handleUsername = (event) => {

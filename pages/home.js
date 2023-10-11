@@ -7,58 +7,61 @@ import {
   deleteAllNotesQuery,
   getNotesQuery,
 } from "../helpers";
+import jwt from "jsonwebtoken"
+import { randomBytes } from "crypto";
 
 export default function Home() {
   const [cookies, setCookie, removeCookie] = useCookies(["username"]);
   const [hydrated, setHydrated] = useState(false);
   const [notes, setNotes] = useState([]);
   const [reload, setReload] = useState(false);
-
+  const [user, setUser] = useState()
   const router = useRouter();
 
-  const fetchNotes = async () => {
-    const result = await getNotesQuery({ id: router.query.userId });
+  const fetchNotes = async (data) => {
+    const result = await getNotesQuery({ id: data.userId });
     setNotes(result);
   };
 
   useEffect(() => {
     setHydrated(true);
-    if (!cookies.username) {
+    if (!cookies.token) {
       router.push("/");
     }
-
+    const decoded = jwt.decode(cookies.token)
+    setUser(decoded)
+    console.log(decoded)
     // wait for router to initialize before running the query
     if (!router.isReady) {
       return;
     }
-    fetchNotes();
+    fetchNotes(decoded);
   }, [router.isReady]);
 
   useEffect(() => {
     if (reload === true) {
-      fetchNotes();
+      fetchNotes(user);
       setReload(false);
     }
   }, [reload]);
 
   const handleLogout = (event) => {
     event.preventDefault();
-    removeCookie("username", { path: "/" });
-    removeCookie("userId", { path: "/" });
-    removeCookie("userType", { path: "/" });
+    removeCookie("token", { path: "/" });
     router.push("/");
   };
 
   const handleCreate = async () => {
     const note = prompt("Enter your note: ");
-    const result = await createNoteQuery({ id: router.query.userId, note });
+    console.log(user.userId, note)
+    const result = await createNoteQuery({ id: user.userId, note });
     if (result) {
       setReload(true);
     }
   };
 
   const handleDelete = async () => {
-    const result = await deleteAllNotesQuery({ id: router.query.userId });
+    const result = await deleteAllNotesQuery({ id: user.userId });
     console.log(result);
     if (result) {
       setReload(true);
@@ -69,13 +72,13 @@ export default function Home() {
     <>
       <div>
         <h1>
-          Hello, <a>{hydrated && cookies.username}</a>
+          Hello, <a>{hydrated && user.username}</a>
         </h1>
       </div>
       <div>
         <h2>Here are your notes:</h2>
         {notes.map((note) => (
-          <div key={note.id}>{note.note}</div>
+          <div key={note.id+randomBytes(20)}>{note.note}</div>
         ))}
       </div>
       <div className="button-container">
@@ -84,7 +87,7 @@ export default function Home() {
       <div className="button-container">
         <button onClick={handleCreate}>Create a note</button>
       </div>
-      {hydrated && cookies.userType === "admin" && (
+      {hydrated && user.userType === "admin" && (
         <>
           <div className="button-container-text">Only for admins!</div>
           <div className="button-container">

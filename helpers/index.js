@@ -3,8 +3,7 @@ import axios from "axios";
 export const loginQuery = async (data) => {
   const query = `SELECT * FROM users WHERE username = '${data.username}' AND password = '${data.password}'`;
   const response = await axios.post("/api/login", { query });
-  const userExists = response.data.result.rows.length > 0;
-  return userExists;
+  return response;
 };
 
 export const allUsersQuery = async () => {
@@ -46,3 +45,8 @@ export const deleteAllNotesQuery = async (data) => {
   const response = await axios.post("/api/deleteAllNotes");
   return response.status === 200;
 };
+
+export const verifyToken = async (data) => {
+  const response = await axios.post("/api/verifyToken", {token: data.token})
+  return response.status === 200
+}

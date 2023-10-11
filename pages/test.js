@@ -3,9 +3,12 @@ import {
   findUserQuery,
   loginQuery,
   registerQuery,
+  verifyToken,
 } from "../helpers";
+import { useCookies } from "react-cookie";
 
-export default function test() {
+export default function Test() {
+  const [cookies, setCookie, removeCookie] = useCookies([]);
   const handleAllUsersQuery = async () => {
     const result = await allUsersQuery();
     console.log(result);
@@ -15,7 +18,7 @@ export default function test() {
     console.log(result);
   };
   const handleLoginQuery = async () => {
-    const result = await loginQuery({ username: "admin2", password: "admin2" });
+    const result = await loginQuery({ username: "admin", password: "admin" });
     console.log(result);
   };
   const handleRegisterQuery = async () => {
@@ -25,12 +28,17 @@ export default function test() {
     });
     console.log(result);
   };
+  const handleVerifyToken = async () => {
+    const result = await verifyToken(cookies.token)
+    console.log(result)
+  }
   return (
     <>
       <button onClick={handleAllUsersQuery}>allusers</button>
       <button onClick={handleFindUserQuery}>finduser</button>
       <button onClick={handleLoginQuery}>login</button>
       <button onClick={handleRegisterQuery}>register</button>
+      <button onClick={handleVerifyToken}>token</button>
     </>
   );
 }

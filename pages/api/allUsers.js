@@ -1,4 +1,5 @@
-import conn from "../../conifg/db";
+/* eslint-disable import/no-anonymous-default-export */
+import conn from "../../config/db";
 
 export default async (req, res) => {
   try {
