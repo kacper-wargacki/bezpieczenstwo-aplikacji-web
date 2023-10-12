@@ -3,7 +3,6 @@ import conn from "../../config/db";
 
 export default async (req, res) => {
   try {
-    console.log(req.body, typeof req.body.id);
     const query = "INSERT INTO notes(id, note) VALUES($1, $2)";
     const values = [req.body.id, req.body.note];
     const result = await conn.query(query, values);

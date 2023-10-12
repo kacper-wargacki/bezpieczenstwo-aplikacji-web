@@ -2,6 +2,7 @@
 import jwt from "jsonwebtoken";
 
 export default async (req, res) => {
+  console.log(req.body)
   try {
     const decoded = jwt.verify(req.body.token, process.env.JWT_SECRET)
     if(!decoded)

@@ -1,8 +1,8 @@
 import axios from "axios";
 
 export const loginQuery = async (data) => {
-  const query = `SELECT * FROM users WHERE username = '${data.username}' AND password = '${data.password}'`;
-  const response = await axios.post("/api/login", { query });
+  console.log(data);
+  const response = await axios.post("/api/login", { data });
   return response;
 };
 
@@ -12,20 +12,8 @@ export const allUsersQuery = async () => {
 };
 
 export const registerQuery = async (data) => {
-  const userExists = await findUserQuery({ username: data.username });
-  if (userExists.length > 0) {
-    return 500;
-  } else {
-    const response = await axios.post("/api/register", data);
-    return response.status === 200;
-  }
-};
-
-export const findUserQuery = async (data) => {
-  const query = `SELECT * FROM users WHERE username = '${data.username}'`;
-  const response = await axios.post("/api/findUser", { query });
-  console.log(response);
-  return response.data.result.rows;
+  const response = await axios.post("/api/register", data);
+  return response.status === 200;
 };
 
 export const createNoteQuery = async (data) => {
@@ -47,6 +35,6 @@ export const deleteAllNotesQuery = async (data) => {
 };
 
 export const verifyToken = async (data) => {
-  const response = await axios.post("/api/verifyToken", {token: data.token})
-  return response.status === 200
-}
+  const response = await axios.post("/api/verifyToken", { token: data });
+  return response.status === 200;
+};
