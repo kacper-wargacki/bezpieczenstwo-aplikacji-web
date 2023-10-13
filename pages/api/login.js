@@ -8,14 +8,18 @@ export default async (req, res) => {
     const values = [req.body.data.username, req.body.data.password];
     const result = await conn.query(query, values);
     const user = result.rows[0];
-    const token = jwt.sign(
-      { userId: user.id, username: user.username, userType: user.userType },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "5m",
-      }
-    );
-    res.status(200).json({ user, token });
+    if (!user) {
+      res.status(400).json({ message: "User does not exist" });
+    } else {
+      const token = jwt.sign(
+        { userId: user.id, username: user.username, userType: user.userType },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "5m",
+        }
+      );
+      res.status(200).json({ user, token, message: "Token OK" });
+    }
   } catch (error) {
     res.status(500).json({ error: "Server error" });
     console.log(error);

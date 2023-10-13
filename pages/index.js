@@ -11,26 +11,28 @@ export default function Login() {
   const [cookies, setCookie, removeCookie] = useCookies();
 
   useEffect(() => {
-    if (cookies.userId) {
-      router.push(`/home?userId=${cookies.userId}`);
+    if (cookies.token) {
+      router.push(`/home`);
     }
   }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    // Find user login info
     const response = await loginQuery({ username, password });
-    const user = response.data.user
-    console.log(user.username, "is user in database");
-    if (user.id) {
-      setCookie("token", response.data.token, { path: "/" });
-      router.push(`/home`);
+    console.log(response);
+    if (response.status === 200) {
+      const user = response.data.user;
+      console.log(user.username, "is user in database");
+      if (user.id) {
+        setCookie("token", response.data.token, { path: "/" });
+        router.push(`/home`);
+      } else {
+        alert("Login failed");
+      }
     } else {
-      alert("Login failed");
+      alert(response.data.message);
     }
   };
-
 
   //handle username and password input to state
   const handleUsername = (event) => {

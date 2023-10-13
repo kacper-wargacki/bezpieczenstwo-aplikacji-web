@@ -1,7 +1,6 @@
 import axios from "axios";
 
 export const loginQuery = async (data) => {
-  console.log(data);
   const response = await axios.post("/api/login", { data });
   return response;
 };
@@ -29,7 +28,7 @@ export const getNotesQuery = async (data) => {
   return response.data.result.rows;
 };
 
-export const deleteAllNotesQuery = async (data) => {
+export const deleteAllNotesQuery = async () => {
   const response = await axios.post("/api/deleteAllNotes");
   return response.status === 200;
 };
