@@ -6,7 +6,7 @@ export default async (req, res) => {
   const isVerified = await verifyToken(req.body.token);
   console.log(isVerified);
   if (isVerified.status === 200) {
-    if (isVerified.userType !== "admin") {
+    if (isVerified.decoded.userType !== "admin") {
       res
         .status(400)
         .json({ message: "You are not authorized to perform this action" });

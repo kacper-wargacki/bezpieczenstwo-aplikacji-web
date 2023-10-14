@@ -6,7 +6,7 @@ export default async (req, res) => {
   const isVerified = await verifyToken(req.body.token);
   if (isVerified.status === 200) {
     const query = "SELECT * FROM notes WHERE id = $1";
-    const values = [req.body.id];
+    const values = [isVerified.decoded.userId];
     const result = await conn.query(query, values);
     res.status(200).json({ result });
   } else if (isVerified.status === 404) {
