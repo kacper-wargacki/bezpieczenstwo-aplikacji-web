@@ -15,10 +15,9 @@ export default async (req, res) => {
         { userId: user.id, username: user.username, userType: user.userType },
         process.env.NEXT_PUBLIC_JWT_SECRET,
         {
-          expiresIn: "5m",
+          expiresIn: "15m",
         }
       );
-      console.log(token);
       res.status(200).json({ user, token, message: "Token OK" });
     }
   } catch (error) {

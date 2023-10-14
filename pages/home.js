@@ -19,18 +19,39 @@ export default function Home() {
   const router = useRouter();
 
   const fetchNotes = async (data) => {
-    const result = await getNotesQuery({ id: data.userId });
+    const result = await getNotesQuery({
+      id: data.userId,
+      token: cookies.token,
+    });
     if (result.status === 200) {
       setNotes(result.data.result.rows);
+    } else if (result.status === 400) {
+      alert(result.data.message);
+      removeCookie("token", { path: "/" });
+      router.replace("/");
     } else {
-      alert(response.message);
+      alert(result.message);
+      removeCookie("token", { path: "/" });
+      router.replace("/");
     }
   };
 
   useEffect(() => {
+    if (
+      !cookies.token ||
+      jwt.decode(cookies.token).exp < Math.floor(Date.now() / 1000)
+    ) {
+      router.replace("/");
+      removeCookie("token", { path: "/" });
+      return;
+    }
+  }, [router]);
+
+  useEffect(() => {
     setHydrated(true);
     if (!cookies.token) {
-      router.push("/");
+      router.replace("/");
+      return;
     }
     const decoded = jwt.decode(cookies.token);
     setUser(decoded);
@@ -38,7 +59,7 @@ export default function Home() {
     if (!router.isReady) {
       return;
     }
-    fetchNotes(decoded);
+    cookies.token && fetchNotes(decoded);
   }, [router.isReady]);
 
   useEffect(() => {
@@ -51,25 +72,42 @@ export default function Home() {
   const handleLogout = (event) => {
     event.preventDefault();
     removeCookie("token", { path: "/" });
-    router.push("/");
+    router.replace("/");
   };
 
   const handleCreate = async () => {
     const note = prompt("Enter your note: ");
-    const result = await createNoteQuery({ id: user.userId, note });
+    const result = await createNoteQuery({
+      id: user.userId,
+      note,
+      token: cookies.token,
+    });
+    console.log(result);
     if (result.status === 200) {
       setReload(true);
+    } else if (result.status === 400) {
+      alert(result.data.message);
+      removeCookie("token", { path: "/" });
+      router.replace("/");
     } else {
-      alert(response.message);
+      console.log(result);
+      alert(result.message);
     }
   };
 
   const handleDelete = async () => {
-    const result = await deleteAllNotesQuery({ id: user.userId });
+    const result = await deleteAllNotesQuery({
+      userType: user.userType,
+      token: cookies.token,
+    });
     if (result.status === 200) {
       setReload(true);
+    } else if (result.status === 400) {
+      alert(result.data.message);
+      removeCookie("token", { path: "/" });
+      router.replace("/");
     } else {
-      alert(response.message);
+      alert(result.message);
     }
   };
 
@@ -77,7 +115,7 @@ export default function Home() {
     <>
       <div>
         <h1>
-          Hello, <a>{hydrated && user.username}</a>
+          Hello, <a>{hydrated && cookies.token && user.username}</a>
         </h1>
       </div>
       <div>
@@ -92,7 +130,7 @@ export default function Home() {
       <div className="button-container">
         <button onClick={handleCreate}>Create a note</button>
       </div>
-      {hydrated && user.userType === "admin" && (
+      {hydrated && cookies.token && user.userType === "admin" && (
         <>
           <div className="button-container-text">Only for admins!</div>
           <div className="button-container">

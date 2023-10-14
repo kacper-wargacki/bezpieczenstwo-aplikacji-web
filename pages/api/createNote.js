@@ -1,14 +1,19 @@
 /* eslint-disable import/no-anonymous-default-export */
 import conn from "../../config/db";
+import { verifyToken } from "../../helpers";
 
 export default async (req, res) => {
-  try {
+  const isVerified = await verifyToken(req.body.token);
+  if (isVerified.status === 200) {
     const query = "INSERT INTO notes(id, note) VALUES($1, $2)";
     const values = [req.body.id, req.body.note];
     const result = await conn.query(query, values);
     res.status(200).json({ result });
-  } catch (error) {
-    res.status(500).json({ error: "Server error" });
-    console.log(error);
+  } else if (isVerified.status === 404) {
+    res.status(404).json({ message: isVerified.message });
+  } else if (isVerified.status === 400) {
+    res.status(400).json({ message: isVerified.message });
+  } else {
+    res.status(500).json({ message: "Server error" });
   }
 };

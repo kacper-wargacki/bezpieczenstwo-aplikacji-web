@@ -20,8 +20,10 @@ export const createNoteQuery = async (data) => {
     .post("/api/createNote", {
       id: data.id,
       note: data.note,
+      token: data.token,
     })
     .catch((error) => {
+      console.log(error);
       return error.response;
     });
   return response;
@@ -29,33 +31,37 @@ export const createNoteQuery = async (data) => {
 
 export const getNotesQuery = async (data) => {
   const response = await axios
-    .post("/api/getNotes", { id: data.id })
+    .post("/api/getNotes", { id: data.id, token: data.token })
+    .catch((error) => {
+      console.log(error);
+      return error.response;
+    });
+  return response;
+};
+
+export const deleteAllNotesQuery = async (data) => {
+  const response = await axios
+    .post("/api/deleteAllNotes", { token: data.token, userType: data.userType })
     .catch((error) => {
       return error.response;
     });
   return response;
 };
 
-export const deleteAllNotesQuery = async () => {
-  const response = await axios.post("/api/deleteAllNotes").catch((error) => {
-    return error.response;
-  });
-  return response;
-};
-
+// backend side helper function
 export const verifyToken = async (token) => {
   try {
     const decoded = jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET);
-    console.log(decoded);
-    if (!decoded) {
+    if (!decoded.username) {
       return { message: "Token verification error", status: 404 };
-    } else if (decoded.exp < Math.floor(Date.now() / 1000)) {
-      return { message: "Token expired, please login again", status: 400 };
     } else {
-      return { message: "Token OK", status: 200 };
+      return { message: "Token OK", status: 200, decoded: decoded.userType };
     }
   } catch (error) {
-    console.log(error);
-    return { message: "Server error", status: 500 };
+    if (error.name === "TokenExpiredError") {
+      return { message: "Token expired, please login again", status: 400 };
+    } else {
+      return { message: error, status: 500 };
+    }
   }
 };
