@@ -52,7 +52,6 @@ export const deleteAllNotesQuery = async (data) => {
 export const verifyToken = async (token) => {
   try {
     const decoded = jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET);
-    console.log(decoded);
     if (!decoded.username) {
       return { message: "Token verification error", status: 404 };
     } else {

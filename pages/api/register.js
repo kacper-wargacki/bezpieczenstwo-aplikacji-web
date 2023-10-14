@@ -1,5 +1,6 @@
 /* eslint-disable import/no-anonymous-default-export */
 import conn from "../../config/db";
+import { sha256 } from "js-sha256";
 
 export default async (req, res) => {
   try {
@@ -11,7 +12,7 @@ export default async (req, res) => {
       res.status(409).json({ message: "User already exists" });
     } else {
       const query = "INSERT INTO users(username, password) VALUES($1, $2)";
-      const values = [req.body.username, req.body.password];
+      const values = [req.body.username, sha256(req.body.password)];
       const result = await conn.query(query, values);
       res.status(200).json({ result });
     }

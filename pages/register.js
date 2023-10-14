@@ -12,7 +12,6 @@ export default function Register() {
 
     // Find user login info
     const response = await registerQuery({ username, password });
-    console.log(response);
     if (response.status === 200) {
       alert("Account created");
       router.push("/");

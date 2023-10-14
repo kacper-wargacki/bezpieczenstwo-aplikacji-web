@@ -1,11 +1,12 @@
 /* eslint-disable import/no-anonymous-default-export */
+import { sha256 } from "js-sha256";
 import conn from "../../config/db";
 import jwt from "jsonwebtoken";
 
 export default async (req, res) => {
   try {
     const query = `SELECT * FROM users WHERE username = $1 AND password = $2`;
-    const values = [req.body.data.username, req.body.data.password];
+    const values = [req.body.data.username, sha256(req.body.data.password)];
     const result = await conn.query(query, values);
     const user = result.rows[0];
     if (!user) {

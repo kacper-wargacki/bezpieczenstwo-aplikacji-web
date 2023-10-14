@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -82,7 +83,6 @@ export default function Home() {
       note,
       token: cookies.token,
     });
-    console.log(result);
     if (result.status === 200) {
       setReload(true);
     } else if (result.status === 400) {
@@ -90,7 +90,6 @@ export default function Home() {
       removeCookie("token", { path: "/" });
       router.replace("/");
     } else {
-      console.log(result);
       alert(result.message);
     }
   };
