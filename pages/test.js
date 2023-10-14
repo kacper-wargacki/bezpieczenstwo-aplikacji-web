@@ -1,20 +1,22 @@
-import {
-  allUsersQuery,
-  loginQuery,
-  registerQuery,
-  verifyToken,
-} from "../helpers";
+import { loginQuery, registerQuery, verifyToken } from "../helpers";
 import { useCookies } from "react-cookie";
 
 export default function Test() {
   const [cookies, setCookie, removeCookie] = useCookies([]);
-  const handleAllUsersQuery = async () => {
-    const result = await allUsersQuery();
-    console.log(result);
-  };
+
   const handleLoginQuery = async () => {
-    const result = await loginQuery({ username: "admin", password: "admin" });
-    console.log(result);
+    const response = await loginQuery({ username: "admin", password: "admin" });
+    if (response.status === 200) {
+      const user = response.data.user;
+      if (user.id) {
+        setCookie("token", response.data.token, { path: "/" });
+      } else {
+        alert("Login failed");
+      }
+    } else {
+      alert(response.data.message);
+    }
+    console.log(response);
   };
   const handleRegisterQuery = async () => {
     const result = await registerQuery({
@@ -29,7 +31,6 @@ export default function Test() {
   };
   return (
     <>
-      <button onClick={handleAllUsersQuery}>allusers</button>
       <button onClick={handleLoginQuery}>login</button>
       <button onClick={handleRegisterQuery}>register</button>
       <button onClick={handleVerifyToken}>token</button>

@@ -19,10 +19,8 @@ export default function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const response = await loginQuery({ username, password });
-    console.log(response);
     if (response.status === 200) {
       const user = response.data.user;
-      console.log(user.username, "is user in database");
       if (user.id) {
         setCookie("token", response.data.token, { path: "/" });
         router.push(`/home`);

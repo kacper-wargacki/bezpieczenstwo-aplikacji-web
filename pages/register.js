@@ -13,12 +13,13 @@ export default function Register() {
     // Find user login info
     const response = await registerQuery({ username, password });
     console.log(response);
-    if (response == true) {
+    if (response.status === 200) {
       alert("Account created");
-    } else if (response === 500) {
-      alert("Username already exists");
+      router.push("/");
+    } else if (response.status === 409) {
+      alert(response.data.message);
     } else {
-      alert("An error occuered, please try again");
+      alert("An error occurred, please try again");
     }
     setUsername("");
     setPassword("");

@@ -8,7 +8,7 @@ export default async (req, res) => {
     const users = await conn.query(query1, values1);
     const userExists = users.rows.length > 0;
     if (userExists) {
-      res.status(400).json({ message: "User already exists" });
+      res.status(409).json({ message: "User already exists" });
     } else {
       const query = "INSERT INTO users(username, password) VALUES($1, $2)";
       const values = [req.body.username, req.body.password];
@@ -17,6 +17,5 @@ export default async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ error: "Server error" });
-    console.log(error);
   }
 };

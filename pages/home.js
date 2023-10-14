@@ -7,7 +7,7 @@ import {
   deleteAllNotesQuery,
   getNotesQuery,
 } from "../helpers";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 import { randomBytes } from "crypto";
 
 export default function Home() {
@@ -15,12 +15,16 @@ export default function Home() {
   const [hydrated, setHydrated] = useState(false);
   const [notes, setNotes] = useState([]);
   const [reload, setReload] = useState(false);
-  const [user, setUser] = useState()
+  const [user, setUser] = useState();
   const router = useRouter();
 
   const fetchNotes = async (data) => {
     const result = await getNotesQuery({ id: data.userId });
-    setNotes(result);
+    if (result.status === 200) {
+      setNotes(result.data.result.rows);
+    } else {
+      alert(response.message);
+    }
   };
 
   useEffect(() => {
@@ -28,9 +32,8 @@ export default function Home() {
     if (!cookies.token) {
       router.push("/");
     }
-    const decoded = jwt.decode(cookies.token)
-    setUser(decoded)
-    console.log(decoded)
+    const decoded = jwt.decode(cookies.token);
+    setUser(decoded);
     // wait for router to initialize before running the query
     if (!router.isReady) {
       return;
@@ -53,18 +56,20 @@ export default function Home() {
 
   const handleCreate = async () => {
     const note = prompt("Enter your note: ");
-    console.log(user.userId, note)
     const result = await createNoteQuery({ id: user.userId, note });
-    if (result) {
+    if (result.status === 200) {
       setReload(true);
+    } else {
+      alert(response.message);
     }
   };
 
   const handleDelete = async () => {
     const result = await deleteAllNotesQuery({ id: user.userId });
-    console.log(result);
-    if (result) {
+    if (result.status === 200) {
       setReload(true);
+    } else {
+      alert(response.message);
     }
   };
 
@@ -78,7 +83,7 @@ export default function Home() {
       <div>
         <h2>Here are your notes:</h2>
         {notes.map((note) => (
-          <div key={note.id+randomBytes(20)}>{note.note}</div>
+          <div key={note.id + randomBytes(20)}>{note.note}</div>
         ))}
       </div>
       <div className="button-container">
