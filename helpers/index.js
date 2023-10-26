@@ -1,15 +1,18 @@
 import axios from "axios";
-import jwt from "jsonwebtoken";
 
+const db = "http://127.0.0.1:3000";
+const headers = {
+  "Content-Type": "application/json",
+};
 export const loginQuery = async (data) => {
-  const response = await axios.post("/api/login", { data }).catch((error) => {
+  const response = await axios.post(`${db}/login`, { data }).catch((error) => {
     return error.response;
   });
   return response;
 };
 
 export const registerQuery = async (data) => {
-  const response = await axios.post("/api/register", data).catch((error) => {
+  const response = await axios.post(`${db}/register`, data).catch((error) => {
     return error.response;
   });
   return response;
@@ -17,13 +20,12 @@ export const registerQuery = async (data) => {
 
 export const createNoteQuery = async (data) => {
   const response = await axios
-    .post("/api/createNote", {
+    .post(`${db}/createNote`, {
       id: data.id,
       note: data.note,
       token: data.token,
     })
     .catch((error) => {
-      console.log(error);
       return error.response;
     });
   return response;
@@ -31,9 +33,8 @@ export const createNoteQuery = async (data) => {
 
 export const getNotesQuery = async (data) => {
   const response = await axios
-    .post("/api/getNotes", { id: data.id, token: data.token })
+    .post(`${db}/getNotes`, { id: data.id, token: data.token })
     .catch((error) => {
-      console.log(error);
       return error.response;
     });
   return response;
@@ -41,27 +42,12 @@ export const getNotesQuery = async (data) => {
 
 export const deleteAllNotesQuery = async (data) => {
   const response = await axios
-    .post("/api/deleteAllNotes", { token: data.token, userType: data.userType })
+    .post(`${db}/deleteAllNotes`, {
+      token: data.token,
+      userType: data.userType,
+    })
     .catch((error) => {
       return error.response;
     });
   return response;
-};
-
-// backend side helper function
-export const verifyToken = async (token) => {
-  try {
-    const decoded = jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET);
-    if (!decoded.username) {
-      return { message: "Token verification error", status: 404 };
-    } else {
-      return { message: "Token OK", status: 200, decoded };
-    }
-  } catch (error) {
-    if (error.name === "TokenExpiredError") {
-      return { message: "Token expired, please login again", status: 400 };
-    } else {
-      return { message: error, status: 500 };
-    }
-  }
 };

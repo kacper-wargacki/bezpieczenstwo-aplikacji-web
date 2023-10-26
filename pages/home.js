@@ -25,7 +25,7 @@ export default function Home() {
       token: cookies.token,
     });
     if (result.status === 200) {
-      setNotes(result.data.result.rows);
+      await setNotes(result.data.result.recordsets[0]);
     } else if (result.status === 400) {
       alert(result.data.message);
       removeCookie("token", { path: "/" });
@@ -84,6 +84,7 @@ export default function Home() {
       token: cookies.token,
     });
     if (result.status === 200) {
+      await fetchNotes(user);
       setReload(true);
     } else if (result.status === 400) {
       alert(result.data.message);
