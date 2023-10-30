@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const db = "http://127.0.0.1:3000";
+const db = process.env.NEXT_PUBLIC_DB_URL;
 const headers = {
   "Content-Type": "application/json",
 };
