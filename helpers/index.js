@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const db = process.env.NEXT_PUBLIC_DB_URL;
+
 const headers = {
   "Content-Type": "application/json",
 };
@@ -8,6 +9,7 @@ export const loginQuery = async (data) => {
   const response = await axios.post(`${db}/login`, { data }).catch((error) => {
     return error.response;
   });
+  console.log(db + "/login");
   return response;
 };
 
