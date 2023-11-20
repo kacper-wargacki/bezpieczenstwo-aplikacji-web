@@ -18,7 +18,9 @@ export default function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    console.log(`Submit button clicked`);
     const response = await loginQuery({ username, password });
+    console.log(`Response from backend: ${response}`);
     if (response.status === 200) {
       const user = response.data.user;
       if (user.id) {

@@ -6,10 +6,12 @@ const headers = {
   "Content-Type": "application/json",
 };
 export const loginQuery = async (data) => {
+  console.log(`Attempting to login with ${data}`);
   const response = await axios.post(`${db}/login`, { data }).catch((error) => {
+    console.log(error);
     return error.response;
   });
-  console.log(db + "/login");
+  console.log(`Returning function response: ${response}`);
   return response;
 };
 
